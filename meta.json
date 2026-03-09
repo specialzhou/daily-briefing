@@ -1,0 +1,16 @@
+{
+  "project_id": "daily-briefing",
+  "title": "每日简报系统",
+  "project_room_id": "!PSvFLHC3sLpbhsixt6:matrix-local.hiclaw.io:18080",
+  "status": "active",
+  "workers": [
+    "product-manager",
+    "ui-designer",
+    "backend-dev",
+    "frontend-dev",
+    "qa-engineer",
+    "devops-engineer"
+  ],
+  "created_at": "2026-03-07T11:03:55Z",
+  "confirmed_at": null
+}

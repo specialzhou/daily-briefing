@@ -1,0 +1,42 @@
+name: Generate Daily Briefing
+
+on:
+  schedule:
+    # 每天北京时间 9:00 (UTC 1:00)
+    - cron: '0 1 * * *'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        working-directory: ./web
+        run: npm ci
+        
+      - name: Build
+        working-directory: ./web
+        run: npm run build
+        
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./web
+          
+      - name: Send Matrix Notification
+        if: always()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{"msgtype":"text","body":"📰 每日简报已更新！\n\n✅ 生成成功\n🔗 查看：https://daily-briefing.vercel.app"}' \
+            "https://matrix-local.hiclaw.io:8080/_matrix/client/v3/rooms/!PSvFLHC3sLpbhsixt6:matrix-local.hiclaw.io:18080/send/m.room.message?access_token=${{ secrets.MATRIX_ACCESS_TOKEN }}"
